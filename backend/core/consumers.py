@@ -38,6 +38,8 @@ class TripChatConsumer(AsyncWebsocketConsumer):
             return
         # Save message to DB
         await self.save_message(message)
+        # Notify other members
+        await self.notify_other_members()
         # Broadcast to group
         await self.channel_layer.group_send(
             self.room_group_name,
@@ -63,6 +65,17 @@ class TripChatConsumer(AsyncWebsocketConsumer):
     @database_sync_to_async
     def save_message(self, content):
         return Message.objects.create(trip_id=self.trip_id, sender=self.user, content=content)
+
+    @database_sync_to_async
+    def notify_other_members(self):
+        from .models import Notification, TripMember, Trip
+        trip = Trip.objects.get(id=self.trip_id)
+        approved_members = TripMember.objects.filter(trip=trip, status='approved').exclude(user=self.user)
+        for member in approved_members:
+            Notification.objects.create(
+                user=member.user,
+                content=f'💬 New message in "{trip.title}"'
+            )
 
     def get_timestamp(self):
         from datetime import datetime
