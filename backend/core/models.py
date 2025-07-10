@@ -1,6 +1,7 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from taggit.managers import TaggableManager
+from django.conf import settings
 
 class User(AbstractUser):
     bio = models.TextField(blank=True)
@@ -60,3 +61,16 @@ class Notification(models.Model):
 
     def __str__(self):
         return f"To {self.user.username}: {self.content[:30]}..."
+
+class Review(models.Model):
+    trip = models.ForeignKey('Trip', on_delete=models.CASCADE, related_name='reviews')
+    reviewer = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    rating = models.PositiveIntegerField()
+    comment = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('trip', 'reviewer')
+
+    def __str__(self):
+        return f"{self.reviewer.username} reviewed {self.trip.title} ({self.rating}/5)"
