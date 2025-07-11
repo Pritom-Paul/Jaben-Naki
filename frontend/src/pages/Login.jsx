@@ -72,7 +72,12 @@ export default function LoginPage() {
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-indigo-50 via-white to-cyan-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
       <Header />
       <main className="flex-1 flex items-center justify-center p-4">
-        <div className="w-full max-w-md flex flex-col gap-6">
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, ease: 'easeOut' }}
+          className="w-full max-w-md flex flex-col gap-6"
+        >
           <Card className="shadow-2xl border-0 bg-white/80 dark:bg-gray-800/80 backdrop-blur">
             <CardHeader className="text-center">
               <CardTitle className="text-xl text-indigo-500 dark:text-indigo-300">Welcome back</CardTitle>
@@ -152,7 +157,7 @@ export default function LoginPage() {
           <div className="text-muted-foreground *:[a]:hover:text-primary text-center text-xs text-balance *:[a]:underline *:[a]:underline-offset-4">
             By clicking continue, you agree to our <Link to="#" className="text-indigo-600 hover:text-indigo-700">Terms of Service</Link> and <Link to="#" className="text-indigo-600 hover:text-indigo-700">Privacy Policy</Link>.
           </div>
-        </div>
+        </motion.div>
       </main>
       <Footer />
     </div>

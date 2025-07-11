@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge"
 import { Eye, EyeOff, Mail, Lock, User, Loader2, ArrowLeft, Globe } from "lucide-react"
 import Header from "@/components/layout/Header";
 import Footer from  "@/components/layout/Footer"
+import { motion } from "framer-motion";
 
 export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false)
@@ -111,7 +112,12 @@ export default function RegisterPage() {
     >
       <Header />
       <main className="flex-1 flex items-center justify-center p-4">
-          <div className="w-full max-w-2xl flex flex-col gap-6">
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, ease: 'easeOut' }}
+          className="w-full max-w-2xl flex flex-col gap-6"
+        >
           <Card className="shadow-2xl border-0 bg-white/80 dark:bg-gray-800/80 backdrop-blur">
             <CardHeader className="text-center">
               <CardTitle className="text-xl text-indigo-500 dark:text-indigo-300">Create Account</CardTitle>
@@ -386,7 +392,7 @@ export default function RegisterPage() {
               </form>
             </CardContent>
           </Card>
-        </div>
+        </motion.div>
       </main>
       <Footer />
     </div>
