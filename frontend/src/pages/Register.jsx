@@ -27,6 +27,7 @@ export default function RegisterPage() {
     agreeToMarketing: false,
   })
   const [errors, setErrors] = useState({})
+  const [apiError, setApiError] = useState("")
 
   const validateForm = () => {
     const newErrors = {}
@@ -58,27 +59,42 @@ export default function RegisterPage() {
   }
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    if (!validateForm()) return
-    setIsLoading(true)
-    // Prepare form data for API
-    const apiData = new FormData()
-    apiData.append("username", formData.username)
-    apiData.append("email", formData.email)
-    apiData.append("password", formData.password)
-    if (formData.bio.trim()) apiData.append("bio", formData.bio)
-    if (formData.profilePhoto) apiData.append("profile_photo", formData.profilePhoto)
-    if (formData.interests.length > 0) apiData.append("interests", JSON.stringify(formData.interests))
-    await new Promise((resolve) => setTimeout(resolve, 2000))
-    setIsLoading(false)
-    console.log("Registration data prepared for API:", {
-      username: formData.username,
-      email: formData.email,
-      bio: formData.bio || undefined,
-      interests: formData.interests.length > 0 ? formData.interests : undefined,
-      profilePhoto: formData.profilePhoto ? "File uploaded" : undefined,
-    })
-  }
+    e.preventDefault();
+    setApiError("");
+    if (!validateForm()) return;
+    setIsLoading(true);
+    try {
+      const apiData = new FormData();
+      apiData.append("username", formData.username);
+      apiData.append("email", formData.email);
+      apiData.append("password", formData.password);
+      if (formData.bio.trim()) apiData.append("bio", formData.bio);
+      if (formData.profilePhoto) apiData.append("profile_photo", formData.profilePhoto);
+      formData.interests.forEach((interest) => {
+        apiData.append("interests", interest);
+      });
+      const response = await fetch("http://localhost:8000/api/register/", {
+        method: "POST",
+        body: apiData,
+      });
+      const data = await response.json();
+      if (response.ok && data.access) {
+        localStorage.setItem("token", data.access);
+        window.location.href = "/";
+      } else {
+        // Collect all error messages from backend
+        let errorMsg = "Registration failed. Please check your details.";
+        if (data.detail) errorMsg = data.detail;
+        else if (typeof data === "object") {
+          errorMsg = Object.values(data).flat().join(" ");
+        }
+        setApiError(errorMsg);
+      }
+    } catch (err) {
+      setApiError("Network error. Please try again later.");
+    }
+    setIsLoading(false);
+  };
 
   const handleInputChange = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
@@ -361,6 +377,7 @@ export default function RegisterPage() {
                       )}
                     </Button>
                   </div>
+                  {apiError && <p className="text-sm text-red-500 text-center">{apiError}</p>}
                 </div>
                 <div className="text-center text-sm">
                   Already have an account?{" "}

@@ -43,9 +43,11 @@ INSTALLED_APPS = [
     'channels',
     'core',
     'django_filters',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -137,3 +139,5 @@ REST_FRAMEWORK['DEFAULT_FILTER_BACKENDS'] = ['django_filters.rest_framework.Djan
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 ASGI_APPLICATION = 'jaben_naki_backend.routing.application'
+
+CORS_ALLOW_ALL_ORIGINS = True

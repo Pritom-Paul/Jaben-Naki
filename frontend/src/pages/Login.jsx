@@ -1,3 +1,4 @@
+/*************  ✨ Windsurf Command 🌟  *************/
 import React, { useState } from "react"
 import { Link } from "react-router-dom"
 import { Button } from "@/components/ui/button"
@@ -14,17 +15,16 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [formData, setFormData] = useState({
-    email: "",
+    username: "",
     password: "",
   })
   const [errors, setErrors] = useState({})
+  const [apiError, setApiError] = useState("")
 
   const validateForm = () => {
     const newErrors = {}
-    if (!formData.email.trim()) {
-      newErrors.email = "Email is required"
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = "Please enter a valid email address"
+    if (!formData.username.trim()) {
+      newErrors.username = "Username is required"
     }
     if (!formData.password) {
       newErrors.password = "Password is required"
@@ -35,12 +35,32 @@ export default function LoginPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+    setApiError("")
     if (!validateForm()) return
     setIsLoading(true)
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1500))
+    try {
+      const response = await fetch("http://localhost:8000/api/token/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username: formData.username,
+          password: formData.password,
+        }),
+      })
+      const data = await response.json()
+      if (response.ok && data.access) {
+        localStorage.setItem("token", data.access)
+        // Optionally redirect or update UI
+        window.location.href = "/" // Redirect to home or dashboard
+      } else {
+        setApiError(data.detail || "Login failed. Please check your credentials.")
+      }
+    } catch (err) {
+      setApiError("Network error. Please try again later.")
+    }
     setIsLoading(false)
-    console.log("Login data prepared for API:", formData)
   }
 
   const handleInputChange = (field, value) => {
@@ -74,17 +94,17 @@ export default function LoginPage() {
                 </div>
                 <div className="grid gap-6">
                   <div className="grid gap-3">
-                    <Label htmlFor="email">Email</Label>
+                    <Label htmlFor="username">Username</Label>
                     <Input
-                      id="email"
-                      type="email"
-                      placeholder="m@example.com"
+                      id="username"
+                      type="text"
+                      placeholder="your username"
                       required
-                      value={formData.email}
-                      onChange={(e) => handleInputChange("email", e.target.value)}
+                      value={formData.username}
+                      onChange={(e) => handleInputChange("username", e.target.value)}
                       className="bg-indigo-50 dark:bg-gray-900 border-indigo-200 dark:border-gray-700 text-indigo-700 dark:text-indigo-200"
                     />
-                    {errors.email && <p className="text-sm text-red-500">{errors.email}</p>}
+                    {errors.username && <p className="text-sm text-red-500">{errors.username}</p>}
                   </div>
                   <div className="grid gap-3">
                     <div className="flex items-center">
@@ -110,6 +130,7 @@ export default function LoginPage() {
                     </div>
                     {errors.password && <p className="text-sm text-red-500">{errors.password}</p>}
                   </div>
+                  {apiError && <p className="text-sm text-red-500 text-center">{apiError}</p>}
                   <Button type="submit" className="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-semibold" disabled={isLoading}>
                     {isLoading ? (
                       <>
@@ -137,3 +158,5 @@ export default function LoginPage() {
     </div>
   )
 }
+
+/*******  dbe669a2-9b1e-48cc-b48e-38cea700ab45  *******/
