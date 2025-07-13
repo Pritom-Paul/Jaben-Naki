@@ -1,4 +1,3 @@
-/*************  ✨ Windsurf Command 🌟  *************/
 import React, { useState } from "react"
 import { Link } from "react-router-dom"
 import { Button } from "@/components/ui/button"
@@ -164,4 +163,3 @@ export default function LoginPage() {
   )
 }
 
-/*******  dbe669a2-9b1e-48cc-b48e-38cea700ab45  *******/

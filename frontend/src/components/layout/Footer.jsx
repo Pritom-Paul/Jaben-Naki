@@ -1,12 +1,12 @@
 export default function Footer() {
   return (
-    <footer className="bg-gray-900 text-white py-12">
+    <footer className="bg-background text-foreground dark:bg-gray-900 dark:text-white py-12 transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid md:grid-cols-4 gap-6">
           {/* Brand */}
           <div className="md:col-span-2">
-            <h3 className="text-2xl font-bold text-indigo-400 mb-3">Jaben Naki?</h3>
-            <p className="text-gray-300 mb-4 max-w-md">
+            <h3 className="text-2xl font-bold text-indigo-500 dark:text-indigo-400 mb-3">Jaben Naki?</h3>
+            <p className="text-muted-foreground mb-4 max-w-md">
               Connecting solo travelers worldwide to create safe, social, and unforgettable adventures together.
             </p>
             <div className="flex space-x-4">
@@ -25,27 +25,27 @@ export default function Footer() {
           {/* Company */}
           <div>
             <h4 className="font-semibold mb-3">Company</h4>
-            <ul className="space-y-1.5 text-gray-300">
-              <li><a href="#" className="hover:text-white">About Us</a></li>
-              <li><a href="#" className="hover:text-white">Careers</a></li>
-              <li><a href="#" className="hover:text-white">Press</a></li>
-              <li><a href="#" className="hover:text-white">Blog</a></li>
+            <ul className="space-y-1.5 text-muted-foreground">
+              <li><a href="#" className="hover:text-foreground">About Us</a></li>
+              <li><a href="#" className="hover:text-foreground">Careers</a></li>
+              <li><a href="#" className="hover:text-foreground">Press</a></li>
+              <li><a href="#" className="hover:text-foreground">Blog</a></li>
             </ul>
           </div>
 
           {/* Support */}
           <div>
             <h4 className="font-semibold mb-3">Support</h4>
-            <ul className="space-y-1.5 text-gray-300">
-              <li><a href="#contact" className="hover:text-white">Contact</a></li>
-              <li><a href="#" className="hover:text-white">Privacy Policy</a></li>
-              <li><a href="#" className="hover:text-white">Terms of Service</a></li>
-              <li><a href="#" className="hover:text-white">Safety Guidelines</a></li>
+            <ul className="space-y-1.5 text-muted-foreground">
+              <li><a href="#contact" className="hover:text-foreground">Contact</a></li>
+              <li><a href="#" className="hover:text-foreground">Privacy Policy</a></li>
+              <li><a href="#" className="hover:text-foreground">Terms of Service</a></li>
+              <li><a href="#" className="hover:text-foreground">Safety Guidelines</a></li>
             </ul>
           </div>
         </div>
 
-        <div className="border-t border-gray-800 mt-8 pt-6 text-center text-gray-400">
+        <div className="border-t border-gray-200 dark:border-gray-800 mt-8 pt-6 text-center text-muted-foreground">
           <p>&copy; 2025 Jaben Naki? All rights reserved.</p>
         </div>
       </div>
