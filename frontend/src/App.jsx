@@ -3,6 +3,7 @@ import Landing from "./pages/Landing";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
 import TripsPage from "./pages/TripsPage";
+import CreateTripPage from "./pages/CreateTrip";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import ProtectedRoutes from "./components/ProtectedRoutes";
 import { Toaster } from "@/components/ui/sonner"
@@ -16,6 +17,7 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
           <Route path="/trips" element={<TripsPage />} />
+          <Route path="/create-trip" element={<CreateTripPage />} />
           {/* 🔐 Protected Route */}
           <Route element={<ProtectedRoutes />}>
           </Route>

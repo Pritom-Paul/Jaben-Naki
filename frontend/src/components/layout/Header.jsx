@@ -5,11 +5,12 @@ import { Button } from "@/components/ui/button"
 import { Menu, X } from "lucide-react"
 import { useTheme } from "../theme-provider"
 import { ThemeToggle } from "../theme-toggle"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const navigate = useNavigate()
 
   // Check auth status on component mount
   useEffect(() => {
@@ -20,8 +21,37 @@ export default function Header() {
   const handleLogout = () => {
     localStorage.removeItem('token')
     setIsLoggedIn(false)
-    // Optional: redirect to home page
     window.location.href = '/'
+  }
+
+  // Function to handle navigation to sections
+  const navigateToHomeSection = (sectionId) => {
+    if (window.location.pathname === '/' && window.location.hash !== `#${sectionId}`) {
+      // If we're on home page but not already at the section, scroll to it
+      const element = document.getElementById(sectionId)
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' })
+      }
+      // Update URL hash without reload
+      window.history.pushState(null, '', `#${sectionId}`)
+    } else if (window.location.pathname !== '/') {
+      // If we're not on home page, navigate to home with hash
+      navigate('/')
+      // Scroll to section after the page loads
+      setTimeout(() => {
+        const element = document.getElementById(sectionId)
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' })
+        }
+      }, 100)
+    } else {
+      // We're already on home page at this section, just ensure smooth scroll
+      const element = document.getElementById(sectionId)
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' })
+      }
+    }
+    setMobileMenuOpen(false)
   }
 
   return (
@@ -36,9 +66,14 @@ export default function Header() {
           {/* Desktop nav */}
           <div className="hidden md:flex space-x-8">
             <a href="/" className="text-sm font-medium text-foreground hover:text-indigo-500">Home</a>
-            <a href="#features" className="text-sm font-medium text-muted-foreground hover:text-indigo-500">Features</a>
-            <a href="/trips" className="text-sm font-medium text-muted-foreground hover:text-indigo-500">Explore Trips</a>
-            <a href="#contact" className="text-sm font-medium text-muted-foreground hover:text-indigo-500">Contact</a>
+            <button 
+              onClick={() => navigateToHomeSection('features')} 
+              className="text-sm font-medium text-muted-foreground hover:text-indigo-500"
+            >
+              Features
+            </button>
+            <Link to="/trips" className="text-sm font-medium text-muted-foreground hover:text-indigo-500">Explore Trips</Link>
+            <Link to="/create-trip" className="text-sm font-medium text-muted-foreground hover:text-indigo-500">Create Trip</Link>
           </div>
 
           {/* Desktop buttons */}
@@ -80,10 +115,15 @@ export default function Header() {
         {mobileMenuOpen && (
           <div className="md:hidden border-t mt-2">
             <div className="py-3 space-y-2">
-              <a href="#home" className="block px-3 py-2 text-base text-foreground hover:text-indigo-500">Home</a>
-              <a href="#features" className="block px-3 py-2 text-base text-muted-foreground hover:text-indigo-500">Features</a>
+              <a href="/" className="block px-3 py-2 text-base text-foreground hover:text-indigo-500">Home</a>
+              <button 
+                onClick={() => navigateToHomeSection('features')} 
+                className="block px-3 py-2 text-base text-muted-foreground hover:text-indigo-500 w-full text-left"
+              >
+                Features
+              </button>
               <Link to="/trips" className="block px-3 py-2 text-base text-muted-foreground hover:text-indigo-500">Explore Trips</Link>
-              <a href="#contact" className="block px-3 py-2 text-base text-muted-foreground hover:text-indigo-500">Contact</a>
+              <Link to="/create-trip" className="block px-3 py-2 text-base text-muted-foreground hover:text-indigo-500">Create Trip</Link>
               <div className="flex space-x-2 px-3">
                 {isLoggedIn ? (
                   <Button 
@@ -112,3 +152,4 @@ export default function Header() {
     </nav>
   )
 }
+
