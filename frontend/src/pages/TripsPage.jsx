@@ -30,6 +30,12 @@ import Header from "@/components/layout/Header";
 import Footer from  "@/components/layout/Footer"
 import { motion } from "framer-motion"
 import mockTrips from "@/mock/trips"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
 
 const interests = [
   "Adventure Sports",
@@ -82,6 +88,8 @@ export default function TripsPage() {
   const [sortBy, setSortBy] = useState("")
   const [savedTrips, setSavedTrips] = useState([])
   const [visibleTrips, setVisibleTrips] = useState(tripsPerPage)
+  const [selectedTrip, setSelectedTrip] = useState(null)
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
 
   // Saved trips logic
   useEffect(() => {
@@ -377,10 +385,17 @@ export default function TripsPage() {
                 whileHover="hover"
                 animate="rest"
                 style={{ perspective: 800 }}
+                className="cursor-pointer"
               >
-                <Card
-                  className={`overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border-0 border-t-4 ${interestColors[trip.primaryInterest]?.split(' ')[1] || 'border-indigo-500'} bg-white dark:bg-gray-800`}
+                <div 
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setSelectedTrip(trip);
+                    setIsDialogOpen(true);
+                  }}
                 >
+                  <Card className={`overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border-0 border-t-4 ${interestColors[trip.primaryInterest]?.split(' ')[1] || 'border-indigo-500'} bg-white dark:bg-gray-800`}>
                   <div className="relative">
                     <motion.img
                       initial={{ opacity: 0 }}
@@ -393,7 +408,11 @@ export default function TripsPage() {
                     <Button
                       size="sm"
                       variant={isSaved(trip.id) ? "default" : "secondary"}
-                      onClick={() => toggleSave(trip.id)}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        toggleSave(trip.id);
+                      }}
                       className="absolute top-3 right-3 bg-white/90 hover:bg-white dark:bg-gray-900/80 dark:hover:bg-gray-900"
                     >
                       <Heart
@@ -403,7 +422,9 @@ export default function TripsPage() {
                       />
                     </Button>
                     <div className="absolute bottom-3 left-3">
-                      <Badge className={`${interestColors[trip.primaryInterest]?.split(' ')[0] || 'bg-indigo-500'} text-white`}>{trip.primaryInterest}</Badge>
+                      <Badge className={`${interestColors[trip.primaryInterest]?.split(' ')[0] || 'bg-indigo-500'} text-white`}>
+                        {trip.primaryInterest}
+                      </Badge>
                     </div>
                   </div>
                   <CardContent className="p-4">
@@ -449,12 +470,21 @@ export default function TripsPage() {
                         </span>
                       </div>
 
-                      <Button className="bg-indigo-500 hover:bg-indigo-600 text-white w-full" asChild>
-                        <Link href={`/trips/${trip.id}`}>View Details</Link>
+                      <Button 
+                        className="bg-indigo-500 hover:bg-indigo-600 text-white w-full"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          setSelectedTrip(trip);
+                          setIsDialogOpen(true);
+                        }}
+                      >
+                        View Details
                       </Button>
                     </div>
                   </CardContent>
                 </Card>
+              </div>
               </motion.div>
             ))}
           </div>
@@ -475,8 +505,93 @@ export default function TripsPage() {
             </Button>
           </div>
         )}
+      {/* Trip Details Modal */}
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
+          {selectedTrip && (
+            <>
+              <DialogHeader>
+                <DialogTitle className="text-2xl">{selectedTrip.title}</DialogTitle>
+                <div className="flex items-center text-muted-foreground text-sm">
+                  <MapPin className="w-4 h-4 mr-1" />
+                  {selectedTrip.location}
+                </div>
+              </DialogHeader>
+              
+              <img 
+                src={selectedTrip.coverImage || "/placeholder.svg"} 
+                alt={selectedTrip.title} 
+                className="w-full h-64 object-cover rounded-lg mb-4"
+              />
+              
+              <div className="grid grid-cols-2 gap-4 mb-4">
+                <div className="flex items-center">
+                  <Calendar className="w-5 h-5 mr-2 text-indigo-500" />
+                  <div>
+                    <p className="text-sm text-muted-foreground">Dates</p>
+                    <p>{selectedTrip.dates}</p>
+                  </div>
+                </div>
+                <div className="flex items-center">
+                  <DollarSign className="w-5 h-5 mr-2 text-indigo-500" />
+                  <div>
+                    <p className="text-sm text-muted-foreground">Budget</p>
+                    <p>{selectedTrip.budget}</p>
+                  </div>
+                </div>
+                <div className="flex items-center">
+                  <Users className="w-5 h-5 mr-2 text-indigo-500" />
+                  <div>
+                    <p className="text-sm text-muted-foreground">Participants</p>
+                    <p>{selectedTrip.participants}/{selectedTrip.maxParticipants}</p>
+                  </div>
+                </div>
+                <div className="flex items-center">
+                  <Star className="w-5 h-5 mr-2 text-indigo-500 fill-amber-400 text-amber-400" />
+                  <div>
+                    <p className="text-sm text-muted-foreground">Rating</p>
+                    <p>{selectedTrip.rating}</p>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="mb-4">
+                <h4 className="font-medium mb-2">About this trip</h4>
+                <p className="text-muted-foreground">{selectedTrip.description}</p>
+              </div>
+              
+              <div className="mb-4">
+                <h4 className="font-medium mb-2">Organizer</h4>
+                <div className="flex items-center space-x-3">
+                  <img
+                    src={selectedTrip.creator.avatar || "/placeholder.svg"}
+                    alt={selectedTrip.creator.name}
+                    className="w-10 h-10 rounded-full object-cover"
+                  />
+                  <div>
+                    <p className="font-medium">{selectedTrip.creator.name}</p>
+                    <p className="text-sm text-muted-foreground">Trip Organizer</p>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="flex gap-3">
+                <Button 
+                  variant="outline" 
+                  className="flex-1"
+                  onClick={() => setIsDialogOpen(false)}
+                >
+                  Close
+                </Button>
+                <Button className="flex-1 bg-indigo-600 hover:bg-indigo-700">
+                  Request to Join
+                </Button>
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
       </div>
       <Footer />
     </div>
-  )
-}
+  )}
